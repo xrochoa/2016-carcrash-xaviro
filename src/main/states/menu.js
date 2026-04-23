@@ -83,6 +83,11 @@ Menu.prototype = {
         //get user data
         menuState.game.utils.ajax.getHttp();
 
+        //simulation mode: auto-start after a short delay so the menu still flashes
+        if (game.init.simulation) {
+            game.time.events.add(Phaser.Timer.SECOND * 1.2, menuState.startGame, menuState);
+        }
+
     },
 
     update: function() {

@@ -35,6 +35,13 @@ var init = {
 
     mute: true,
 
+    //simulation / auto-demo mode: when true the game auto-starts and a tiny
+    //reactive driver swaps lanes whenever an enemy is approaching in the
+    //same lane. Toggled via the `?sim=1` URL param (see main.js).
+    simulation: false,
+    simulationLookahead: 18, //units of pixelScale to look ahead for danger
+    simulationMinX: 2,       //minimum x (in pixelScale units) before an emergency pedal
+
     //current speeds - read from the per-level arrays
     enemySpeed: function() {
         return this.enemySpeedsByLevel[this.levelIndex];

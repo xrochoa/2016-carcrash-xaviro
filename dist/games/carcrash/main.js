@@ -48,6 +48,13 @@ var init = {
 
     mute: true,
 
+    //simulation / auto-demo mode: when true the game auto-starts and a tiny
+    //reactive driver swaps lanes whenever an enemy is approaching in the
+    //same lane. Toggled via the `?sim=1` URL param (see main.js).
+    simulation: false,
+    simulationLookahead: 18, //units of pixelScale to look ahead for danger
+    simulationMinX: 2,       //minimum x (in pixelScale units) before an emergency pedal
+
     //current speeds - read from the per-level arrays
     enemySpeed: function() {
         return this.enemySpeedsByLevel[this.levelIndex];
@@ -458,6 +465,11 @@ Menu.prototype = {
         //get user data
         menuState.game.utils.ajax.getHttp();
 
+        //simulation mode: auto-start after a short delay so the menu still flashes
+        if (game.init.simulation) {
+            game.time.events.add(Phaser.Timer.SECOND * 1.2, menuState.startGame, menuState);
+        }
+
     },
 
     update: function() {
@@ -687,10 +699,18 @@ GameState.prototype = {
         gameState.animateBackground();
 
 
-        //first click/enter starts game
-        if ((game.init.gameInit === false) && (cursors.down.isDown || cursors.up.isDown || cursors.right.isDown || cursors.left.isDown || game.input.activePointer.isDown)) {
+        //first click/enter starts game (or auto-start in simulation mode)
+        if (game.init.gameInit === false && (
+                cursors.down.isDown || cursors.up.isDown || cursors.right.isDown || cursors.left.isDown ||
+                game.input.activePointer.isDown ||
+                game.init.simulation)) {
             game.utils.ajax.putHttp(game, true, false, 0, function() {}); //dont check top highscore on retry
             gameState.gameStart();
+        }
+
+        //simulation / auto-demo: reactive lane-swapping driver
+        if (game.init.simulation && game.init.gameInit && !game.init.gameOver) {
+            gameState.simulationTick();
         }
 
         //next level
@@ -939,6 +959,50 @@ GameState.prototype.startSong = function() {
     themeSong.loopFull(0.5);
 };
 
+//SIMULATION / AUTO-DEMO
+//
+//Tiny reactive driver: each frame, look a short distance ahead in the
+//player's current lane. If an enemy is approaching, swap to the other
+//lane. Also keeps the player's x-momentum up (gravity pulls leftward
+//in normal play, so without input the car would drift off-screen).
+GameState.prototype.simulationTick = function() {
+
+    //only react while the car is sitting exactly on a lane
+    //(mid-tween the player's y is between lanes, just like manual play)
+    var lanes = game.init.lanes();
+    var atLane = (player.y === lanes[0] || player.y === lanes[1]);
+
+    //Do NOT pedal proactively: each lane swap internally calls accelerate(),
+    //which already provides a rightward nudge. Let gravity pull the car
+    //leftward between dodges (that's how a good human plays this game).
+    //The only exception: if the car is about to fall off the left edge,
+    //emit a single emergency pulse to keep it on screen.
+    var minX = game.init.simulationMinX * game.init.pixelScale;
+    if (player.x < minX) {
+        player.accelerate();
+    }
+
+    if (!atLane) { return; }
+
+    //scan for danger in the player's current lane
+    var lookahead = game.init.simulationLookahead * game.init.pixelScale;
+    var danger = false;
+    enemyGroup.forEach(function(enemy) {
+        if (!enemy.alive) { return; }
+        if (enemy.y !== player.y) { return; }
+        var dx = enemy.x - player.x;
+        if (dx > 0 && dx < lookahead) { danger = true; }
+    });
+
+    if (danger) {
+        if (player.y === lanes[0]) {
+            player.moveDown();
+        } else {
+            player.moveUp();
+        }
+    }
+};
+
 /* === end: main/states/game.js === */
 
     //end of game
@@ -1017,6 +1081,11 @@ Win.prototype.startSong = function() {
 };
 
 /* === end: main/states/win.js === */
+
+    //opt into simulation / auto-demo mode via `?sim=1` in the URL
+    if (typeof window !== 'undefined' && window.location && /[?&]sim=1\b/.test(window.location.search)) {
+        init.simulation = true;
+    }
 
     var game = new Phaser.Game(init.gameWidth(), init.gameHeight(), Phaser.CANVAS, 'phaser-game', null, false, false);
 

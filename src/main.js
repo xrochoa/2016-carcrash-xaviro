@@ -31,6 +31,11 @@ module.exports = function() {
     //end of game
     //=require './main/states/win.js 
 
+    //opt into simulation / auto-demo mode via `?sim=1` in the URL
+    if (typeof window !== 'undefined' && window.location && /[?&]sim=1\b/.test(window.location.search)) {
+        init.simulation = true;
+    }
+
     var game = new Phaser.Game(init.gameWidth(), init.gameHeight(), Phaser.CANVAS, 'phaser-game', null, false, false);
 
     //extending game with utilities

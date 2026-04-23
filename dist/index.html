@@ -60,18 +60,62 @@
         opacity: 0.55;
     }
 
-    .footer a {
+    .footer a, .hint a {
         color: inherit;
         text-decoration: none;
         border-bottom: 1px dotted currentColor;
     }
+
+    .hint a:hover { opacity: 1; }
+
+    .sim-badge {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        padding: 4px 10px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 11px;
+        letter-spacing: 2px;
+        color: #4cfbce;
+        border: 1px solid #4cfbce;
+        border-radius: 2px;
+        text-transform: uppercase;
+        background: rgba(20, 20, 20, 0.5);
+        display: none;
+    }
+
+    .sim-badge::before {
+        content: "\25CF";
+        margin-right: 6px;
+        animation: sim-blink 1s steps(2, start) infinite;
+    }
+
+    @keyframes sim-blink {
+        to { visibility: hidden; }
+    }
+
+    html.simulation .sim-badge { display: inline-block; }
     </style>
 </head>
 
 <body>
+    <div class="sim-badge">SIM &mdash; auto demo</div>
     <div id="phaser-game"></div>
-    <p class="hint">Press <strong>Enter</strong> or click to start.<br/>Use <strong>arrow keys</strong> or click to move.</p>
+    <p class="hint">
+        Press <strong>Enter</strong> or click to start.<br/>
+        Use <strong>arrow keys</strong> or click to move.<br/>
+        <a href="?sim=1" id="sim-link">&#9654; Watch auto-demo</a>
+    </p>
     <p class="footer">CarCrash &middot; FridgeBinge &middot; 2016</p>
+
+    <script>
+    //surface simulation mode on the page (CSS hook + hide the demo link)
+    if (/[?&]sim=1\b/.test(window.location.search)) {
+        document.documentElement.classList.add('simulation');
+        var link = document.getElementById('sim-link');
+        if (link) { link.textContent = '\u25A0 Stop demo'; link.href = '.'; }
+    }
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.40/system.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.6.2/phaser.min.js"></script>
