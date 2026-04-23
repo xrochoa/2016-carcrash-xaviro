@@ -25,14 +25,14 @@ Player.prototype.moveUp = function() {
     this.accelerate();
     add.tween(this).to({
         y: game.init.lanes()[0]
-    }, 300, window.Phaser.Easing.Sinusoidal.InOut, true, 0);
+    }, game.init.laneSwapDuration(), window.Phaser.Easing.Sinusoidal.InOut, true, 0);
 };
 
 Player.prototype.moveDown = function() {
     this.accelerate();
     add.tween(this).to({
         y: game.init.lanes()[1]
-    }, 300, window.Phaser.Easing.Sinusoidal.InOut, true, 0);
+    }, game.init.laneSwapDuration(), window.Phaser.Easing.Sinusoidal.InOut, true, 0);
 };
 
 Player.prototype.moveRight = function() {

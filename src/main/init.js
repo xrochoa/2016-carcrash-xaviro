@@ -50,6 +50,16 @@ var init = {
         return this.gameSpeedsByLevel[this.levelIndex];
     },
 
+    //Lane-swap tween duration, scaled inversely with enemy speed so the
+    //dodge stays reactive at higher levels. At the base speed it's the
+    //original 300ms; at 2x speed it's 150ms, clamped to a sane minimum so
+    //the animation still reads visually.
+    laneSwapDuration: function() {
+        var base = 300;
+        var scaled = base * (this.enemySpeedsByLevel[0] / this.enemySpeed());
+        return Math.max(120, scaled);
+    },
+
     //depend on gameSpeed
     gameSpeedSlower: function() {
         return this.gameSpeed() / 2;
