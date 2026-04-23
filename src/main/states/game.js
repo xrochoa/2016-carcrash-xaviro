@@ -200,7 +200,7 @@ GameState.prototype = {
 GameState.prototype.gameStart = function() {
     //player and enemy move
     player.body.gravity.x = game.init.gravity();
-    enemyGroup.setAll('body.velocity.x', -game.init.enemySpeed); //speed for all in group
+    enemyGroup.setAll('body.velocity.x', -game.init.enemySpeed()); //speed for all in group
     //game start
     game.init.gameInit = true;
 
@@ -281,7 +281,7 @@ GameState.prototype.playerTruckCollision = function(sprite, groupSprite) {
     //animation
     sprite.accelerate();
     sprite.animations.play('explode');
-    groupSprite.body.velocity.x = game.init.enemySpeed;
+    groupSprite.body.velocity.x = game.init.enemySpeed();
     //game over
     game.init.gameOver = true;
 };
@@ -299,7 +299,7 @@ GameState.prototype.enemyTruckCollision = function(truck, enemy) {
 
 GameState.prototype.animateBackground = function() {
     game.utils.tileAnimation(level, game.init.gameSpeedSlowest());
-    game.utils.tileAnimation(floor, game.init.gameSpeed);
+    game.utils.tileAnimation(floor, game.init.gameSpeed());
     game.utils.tileAnimation(road, game.init.gameSpeedSlower());
 };
 
@@ -324,6 +324,9 @@ GameState.prototype.newLevelEnd = function() {
         floor.loadTexture('floor' + (game.init.levelIndex + 1));
         game.utils.fadeIn(level, 0, gameState);
         game.utils.fadeIn(floor, 0, gameState);
+
+        //apply new per-level enemy speed to every live enemy
+        enemyGroup.setAll('body.velocity.x', -game.init.enemySpeed());
     }
 };
 

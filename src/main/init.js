@@ -3,19 +3,23 @@
 var init = {
 
     pixelScale: 10,
-    gameSpeed: 0.5,
 
     gameInit: false,
     gameOver: false,
-    enemySpeed: 300,
     ajax: true,
 
     score: 0,
     levelIndex: 0,
 
-    nextLevel: [10, 100, 1000],
+    //per-level tuning - chosen so every level lasts ~11s on average
+    //given the score rate 2 * enemySpeed / 650 scores per second.
+    enemySpeedsByLevel: [300, 450, 700, 1000],
+    gameSpeedsByLevel: [0.5, 0.75, 1.15, 1.65],
 
-    win: 1000,
+    //score thresholds that trigger the next level (and the win state)
+    nextLevel: [10, 25, 50],
+
+    win: 85,
     highscore: 0,
     highscoreTriggered: false,
 
@@ -31,12 +35,20 @@ var init = {
 
     mute: true,
 
+    //current speeds - read from the per-level arrays
+    enemySpeed: function() {
+        return this.enemySpeedsByLevel[this.levelIndex];
+    },
+    gameSpeed: function() {
+        return this.gameSpeedsByLevel[this.levelIndex];
+    },
+
     //depend on gameSpeed
     gameSpeedSlower: function() {
-        return this.gameSpeed / 2;
+        return this.gameSpeed() / 2;
     },
     gameSpeedSlowest: function() {
-        return this.gameSpeed / 10;
+        return this.gameSpeed() / 10;
     },
 
 
