@@ -1,6 +1,6 @@
-# CarCrash
+# CarCrash 2
 
-> A retro 8-bit browser game built with [Phaser 2](https://phaser.io/). Originally shipped in **2016** as part of the **FridgeBinge** mini-game platform, refreshed and repackaged here as a standalone portfolio artifact.
+> A retro 8-bit browser game built with [Phaser 2](https://phaser.io/). Originally shipped in **2016** as part of the **FridgeBinge** mini-game platform. Refreshed in **2026** as a standalone portfolio artifact with a **synthwave / night-drive** re-skin (the "CarCrash 2" edition) generated procedurally from a tiny Node script — same game geometry, new palette.
 
 ![Year](https://img.shields.io/badge/year-2016-323333) ![Engine](https://img.shields.io/badge/engine-Phaser%202.6.2-4cfbce) ![License](https://img.shields.io/badge/license-ISC-lightgrey)
 
@@ -8,9 +8,16 @@
 
 ## About
 
-Dodge trucks, chain red-car knockouts, climb through four neon levels, and try to hit 1,000 points. The game was built during my early web-developer days and deployed on FridgeBinge, a small platform I built where logged-in users could track scores across several browser mini-games.
+Dodge trucks, chain pink-car knockouts, climb through four neon levels, and try to clear 85 points. The game was built during my early web-developer days and deployed on FridgeBinge, a small platform I built where logged-in users could track scores across several browser mini-games.
 
-This repository is the original source, cleaned up and repackaged so it runs on any modern Node version and deploys to Netlify as a static site — while keeping the original architecture, gameplay, and pixel-art untouched.
+The **"CarCrash 2"** (2026) edition keeps the original 2016 gameplay architecture and geometry untouched. What changed:
+
+- **Procedurally regenerated playfield art** — cars, truck, road, 4 level skies, 4 floors, and the background spritesheet are re-drawn from a pure-Node PNG encoder in `scripts/gen-assets.js` using a synthwave palette. No external image tools, no external dependencies. Original art is preserved under `src/assets/img/_v1/` for one-command rollback.
+- **Per-level speed scaling** so every level lasts ≈11s on average and difficulty actually ramps. Score thresholds rebalanced to match.
+- **Lane-swap duration scales inversely with enemy speed**, so the dodge stays readable at higher levels instead of becoming impossible on level 4.
+- **Auto-demo / simulation mode** — append `?sim=1` to the URL to let a tiny reactive driver play on its own. It's a 20-line heuristic: scan the current lane, swap if something's coming.
+- **Static-host friendly** — the old FridgeBinge backend calls are guarded so the game runs on any static host (Netlify, GitHub Pages) without 404 noise.
+- Text/UI sprites (title screen, retry / highscore / level-up / game-over labels, bitmap font) are **intentionally untouched** — they read fine and redrawing tiny pixel typography would make them worse.
 
 ## Features
 

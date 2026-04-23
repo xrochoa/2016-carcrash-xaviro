@@ -4,6 +4,7 @@
   "description": "Retro 8-bit browser game (Phaser, 2016) — part of the FridgeBinge mini-game platform. Refreshed for portfolio deployment.",
   "private": true,
   "scripts": {
+    "assets": "node scripts/gen-assets.js",
     "build": "node build.js",
     "start": "npm run build && npx --yes serve -l 5000 dist",
     "dev": "npm run build && npx --yes serve -l 5000 dist"
