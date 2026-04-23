@@ -50,7 +50,7 @@ Preloader.prototype = {
         load.image('level-up', this.game.init.source + '/img/levelup.png');
 
         //sounds
-        load.audio('themeSong', this.game.init.source + '/res/themesong.m4a');
+        load.audio('themeSong', this.game.init.source + '/res/themesong.mp3');
         load.audio('explosion', this.game.init.source + '/res/explosion.mp3');
         load.spritesheet('btn-volume', this.game.init.source + '/img/volume.png', 7, 7, 2); // size 30x60 and 4 frames
 

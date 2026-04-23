@@ -490,6 +490,160 @@ function buildFloor(levelIndex, outFile) {
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Tiny 3x5 pixel font                                                       */
+/*                                                                            */
+/*  Enough of the alphabet + digits to spell out the game's name. Glyphs are  */
+/*  stored as 5 rows of 3 bits each; a `1` bit means "draw a pixel".          */
+/* -------------------------------------------------------------------------- */
+
+const FONT_3x5 = {
+    'C': [0b111, 0b100, 0b100, 0b100, 0b111],
+    'A': [0b010, 0b101, 0b111, 0b101, 0b101],
+    'R': [0b110, 0b101, 0b110, 0b101, 0b101],
+    'S': [0b111, 0b100, 0b111, 0b001, 0b111],
+    'H': [0b101, 0b101, 0b111, 0b101, 0b101],
+    '2': [0b110, 0b001, 0b010, 0b100, 0b111],
+    ' ': [0b000, 0b000, 0b000, 0b000, 0b000]
+};
+
+function drawText(c, text, x0, y0, color) {
+    let x = x0;
+    for (let i = 0; i < text.length; i++) {
+        const glyph = FONT_3x5[text[i]];
+        if (!glyph) { x += 4; continue; }
+        for (let r = 0; r < 5; r++) {
+            const row = glyph[r];
+            for (let col = 0; col < 3; col++) {
+                if ((row >> (2 - col)) & 1) px(c, x + col, y0 + r, color);
+            }
+        }
+        x += 3; // tight packing, no inter-char spacing (needed to fit 30px wide)
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Shared backdrop drawer (used by menu + winback + title background)        */
+/* -------------------------------------------------------------------------- */
+
+function drawSynthwaveBackdrop(c, width, height, opts) {
+    const top = opts.top;
+    const bot = opts.bot;
+    const sunY = opts.sunY;
+    const sunR = opts.sunR;
+    const sunColor = opts.sunColor;
+    const sunStripe = opts.sunStripe;
+    const starSeed = opts.starSeed || 1009;
+    const starDensity = opts.starDensity === undefined ? 0.04 : opts.starDensity;
+    const skyEnd = opts.skyEnd || Math.floor(height * 0.65);
+    const gridColor = opts.gridColor || C.neon;
+
+    // sky gradient
+    verticalGradient(c, 0, 0, width, skyEnd, top, bot);
+
+    // stars in the upper sky
+    {
+        let s = starSeed;
+        function rand() { s = (s * 1664525 + 1013904223) & 0x7fffffff; return s / 0x7fffffff; }
+        for (let y = 0; y < Math.floor(skyEnd * 0.6); y++) {
+            for (let x = 0; x < width; x++) {
+                if (rand() < starDensity) px(c, x, y, C.white);
+            }
+        }
+    }
+
+    // sun with horizontal stripe cutouts in the lower half
+    if (sunR > 0) {
+        const cx = Math.floor(width / 2);
+        for (let dy = -sunR; dy <= sunR; dy++) {
+            for (let dx = -sunR; dx <= sunR; dx++) {
+                if (dx * dx + dy * dy <= sunR * sunR) {
+                    const color = (dy > 0 && dy % 2 === 0) ? sunStripe : sunColor;
+                    px(c, cx + dx, sunY + dy, color);
+                }
+            }
+        }
+    }
+
+    // neon perspective grid in the lower half
+    const groundTop = skyEnd;
+    const groundBot = height - 1;
+    const centerX = Math.floor(width / 2);
+    // horizontal lines, spacing widens with distance
+    let gap = 1;
+    let gy = groundTop;
+    while (gy <= groundBot) {
+        for (let x = 0; x < width; x++) px(c, x, gy, gridColor);
+        gap += 1;
+        gy += gap;
+    }
+    // converging vertical lines
+    for (let k = -6; k <= 6; k++) {
+        for (let y = groundTop; y <= groundBot; y++) {
+            const t = (y - groundTop) / Math.max(1, groundBot - groundTop);
+            const spread = Math.max(1, Math.floor(t * 8) + 1);
+            const xx = centerX + k * spread;
+            if (xx >= 0 && xx < width) px(c, xx, y, gridColor);
+        }
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Menu background (30x60)                                                   */
+/* -------------------------------------------------------------------------- */
+function buildMenu(outFile) {
+    const c = canvas(30, 60);
+    drawSynthwaveBackdrop(c, 30, 60, {
+        top: [24, 6, 50, 255],
+        bot: [255, 70, 150, 255],
+        sunY: 26,
+        sunR: 8,
+        sunColor: C.sun,
+        sunStripe: C.sunDim,
+        starSeed: 2027,
+        starDensity: 0.05,
+        skyEnd: 39,
+        gridColor: C.neon
+    });
+    save(c, outFile);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Win background (30x60)                                                    */
+/* -------------------------------------------------------------------------- */
+function buildWinBack(outFile) {
+    const c = canvas(30, 60);
+    drawSynthwaveBackdrop(c, 30, 60, {
+        top: [12, 2, 40, 255],
+        bot: [255, 120, 60, 255],     // victory-warm horizon
+        sunY: 30,
+        sunR: 10,
+        sunColor: [255, 220, 120, 255],
+        sunStripe: [220, 100, 40, 255],
+        starSeed: 4040,
+        starDensity: 0.07,
+        skyEnd: 42,
+        gridColor: [255, 220, 120, 255]
+    });
+    save(c, outFile);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Title: "CARCRASH 2" at 30x7                                               */
+/*                                                                            */
+/*  10 characters x 3px = 30px exactly. 5px tall text centered vertically     */
+/*  in 7px, with a 1px cyan drop-shadow for readability against the pink     */
+/*  menu background. A thin dark underline anchors the letters.              */
+/* -------------------------------------------------------------------------- */
+function buildTitle(outFile) {
+    const c = canvas(30, 7);
+    // drop shadow
+    drawText(c, 'CARCRASH 2', 0, 2, [20, 130, 160, 255]);
+    // main text on top
+    drawText(c, 'CARCRASH 2', 0, 1, C.white);
+    save(c, outFile);
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Build everything                                                          */
 /* -------------------------------------------------------------------------- */
 
@@ -503,7 +657,8 @@ function backupOriginals() {
         'car.png', 'enemy.png', 'truck.png', 'road.png',
         'lv1.png', 'lv2.png', 'lv3.png', 'lv4.png',
         'floor1.png', 'floor2.png', 'floor3.png', 'floor4.png',
-        'backgrounds.png'
+        'backgrounds.png',
+        'menu.png', 'title.png', 'winback.png'
     ];
     for (const name of keep) {
         const src = path.join(OUT, name);
@@ -524,8 +679,11 @@ function main() {
     buildBackgrounds(path.join(OUT, 'backgrounds.png'));
     for (let i = 0; i < 4; i++) buildLevel(i, path.join(OUT, 'lv' + (i + 1) + '.png'));
     for (let i = 0; i < 4; i++) buildFloor(i, path.join(OUT, 'floor' + (i + 1) + '.png'));
+    buildMenu(path.join(OUT, 'menu.png'));
+    buildWinBack(path.join(OUT, 'winback.png'));
+    buildTitle(path.join(OUT, 'title.png'));
 
-    console.log('  regenerated 14 assets in ' + (Date.now() - start) + 'ms');
+    console.log('  regenerated 17 assets in ' + (Date.now() - start) + 'ms');
 }
 
 main();
