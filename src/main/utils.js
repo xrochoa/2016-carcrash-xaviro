@@ -44,6 +44,9 @@ utils.ajax = {
 
     putHttp: function(game, plays, wins, score, cb) {
 
+        //skip network calls when running as a standalone static build
+        if (!game.init.network) { return; }
+
         var req = new XMLHttpRequest();
         req.open('PUT', './api/user');
         req.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -79,6 +82,9 @@ utils.ajax = {
     },
 
     getHttp: function() {
+
+        //skip network calls when running as a standalone static build
+        if (!game || !game.init || !game.init.network) { return; }
 
         var req = new XMLHttpRequest();
         req.open('GET', './api/user');

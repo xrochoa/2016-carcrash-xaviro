@@ -1,51 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
-    <title>hello phaser!</title>
+    <title>CarCrash &mdash; FridgeBinge (2016)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="CarCrash — a retro 8-bit browser game built with Phaser. Part of the FridgeBinge mini-game platform (2016)." />
+    <meta name="author" content="Xavier Reyes Ochoa" />
     <style type="text/css">
-    * {
-        margin: 0;
-        padding: 0;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+        height: 100%;
+        width: 100%;
     }
-    
+
     html {
-        background: -webkit-linear-gradient(top, rgba(50, 50, 51, .9), rgba(76, 251, 206, .9)), url(https://i.ytimg.com/vi/Mx8FFqARb8A/maxresdefault.jpg);
-        background: linear-gradient(to bottom, rgba(50, 50, 51, .9), rgba(76, 251, 206, .9)), url(https://i.ytimg.com/vi/Mx8FFqARb8A/maxresdefault.jpg);
+        background:
+            linear-gradient(to bottom, rgba(50, 50, 51, .92), rgba(76, 251, 206, .88)),
+            radial-gradient(circle at 50% 35%, #2a2a2b 0%, #141414 100%);
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        display: flex;
-        -ms-flex-direction: column;
-        flex-direction: column;
-        height: 100%;
     }
-    
+
     body {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-family: pixel;
+        font-family: "Courier New", Courier, monospace;
         color: #f5f9fa;
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 16px;
     }
-    
-    p {
-        padding: 10px;
-        width: 250px;
-        position: relative;
-        left: 50%;
-        transform: translateX(-50%);
+
+    #phaser-game {
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .hint {
+        margin-top: 18px;
+        padding: 10px 14px;
+        max-width: 320px;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        color: #f5f9fa;
+        opacity: 0.85;
+    }
+
+    .footer {
+        margin-top: 10px;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        opacity: 0.55;
+    }
+
+    .footer a {
+        color: inherit;
+        text-decoration: none;
+        border-bottom: 1px dotted currentColor;
     }
     </style>
 </head>
 
 <body>
     <div id="phaser-game"></div>
-    <p>Press enter or click to start. Use arrows or click to move.</p>
+    <p class="hint">Press <strong>Enter</strong> or click to start.<br/>Use <strong>arrow keys</strong> or click to move.</p>
+    <p class="footer">CarCrash &middot; FridgeBinge &middot; 2016</p>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.40/system.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.6.2/phaser.min.js"></script>
     <script>

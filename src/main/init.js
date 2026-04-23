@@ -22,6 +22,10 @@ var init = {
 
     //network
     gameId: 'carcrash',
+    //Backend integration was part of the original FridgeBinge platform
+    //(user accounts, stored highscores). Disabled for the standalone
+    //portfolio build so the game runs on any static host.
+    network: false,
 
     source: './games/carcrash/assets',
 

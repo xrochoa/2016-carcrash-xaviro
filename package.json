@@ -1,42 +1,12 @@
 {
   "name": "carcrash",
-  "version": "1.0.0",
-  "description": "Retro javascript game",
-  "main": "main.js",
-  "dependencies": {
-    "gulp-include": "^2.3.1",
-    "imagemin-gifsicle": "^5.1.0",
-    "imagemin-jpegtran": "^5.0.2",
-    "imagemin-optipng": "^5.2.1",
-    "imagemin-svgo": "^5.2.0",
-    "systemjs": "^0.19.40"
-  },
-  "devDependencies": {
-    "browser-sync": "2.17.5",
-    "del": "2.2.2",
-    "express": "^4.13.3",
-    "gulp": "3.9.1",
-    "gulp-autoprefixer": "3.1.1",
-    "gulp-browserify": "^0.5.1",
-    "gulp-cdnizer": "^1.1.6",
-    "gulp-clean": "^0.3.1",
-    "gulp-clean-css": "2.0.13",
-    "gulp-concat": "^2.6.0",
-    "gulp-htmlmin": "3.0.0",
-    "gulp-imagemin": "3.0.3",
-    "gulp-jshint": "2.0.1",
-    "gulp-livereload": "^3.8.1",
-    "gulp-nodemon": "^2.0.4",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "2.3.2",
-    "gulp-typescript": "3.0.2",
-    "gulp-uglify": "2.0.0",
-    "jshint": "2.9.4",
-    "run-sequence": "1.2.2"
-  },
+  "version": "1.0.1",
+  "description": "Retro 8-bit browser game (Phaser, 2016) — part of the FridgeBinge mini-game platform. Refreshed for portfolio deployment.",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "build": "node build.js",
+    "start": "npm run build && npx --yes serve -l 5000 dist",
+    "dev": "npm run build && npx --yes serve -l 5000 dist"
   },
   "repository": {
     "type": "git",
@@ -44,14 +14,16 @@
   },
   "keywords": [
     "game",
-    "fridge",
-    "binge",
-    "8bit"
+    "phaser",
+    "fridgebinge",
+    "8bit",
+    "retro",
+    "2016"
   ],
   "author": "Xavier Reyes Ochoa",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/xrochoa/CarCrash/issues"
+  "engines": {
+    "node": ">=14"
   },
   "homepage": "https://github.com/xrochoa/CarCrash#readme"
 }
