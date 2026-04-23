@@ -34,6 +34,8 @@ var init = {
     source: './games/carcrash/assets',
 
     mute: true,
+    //bump this number when swapping audio files to defeat browser caching
+    audioVersion: 2,
 
     //simulation / auto-demo mode: when true the game auto-starts and a tiny
     //reactive driver swaps lanes whenever an enemy is approaching in the

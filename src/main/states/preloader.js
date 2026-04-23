@@ -49,9 +49,11 @@ Preloader.prototype = {
         load.image('top-highscore', this.game.init.source + '/img/top-highscore.png');
         load.image('level-up', this.game.init.source + '/img/levelup.png');
 
-        //sounds
-        load.audio('themeSong', this.game.init.source + '/res/themesong.mp3');
-        load.audio('explosion', this.game.init.source + '/res/explosion.mp3');
+        //sounds - cache-bust so browsers don't serve a stale version after
+        //the audio file is swapped out during development
+        var audioVer = '?v=' + (this.game.init.audioVersion || 1);
+        load.audio('themeSong', this.game.init.source + '/res/themesong.mp3' + audioVer);
+        load.audio('explosion', this.game.init.source + '/res/explosion.mp3' + audioVer);
         load.spritesheet('btn-volume', this.game.init.source + '/img/volume.png', 7, 7, 2); // size 30x60 and 4 frames
 
         //winner
